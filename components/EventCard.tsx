@@ -1,8 +1,11 @@
+"use client";
+
 import { EventItem } from "@/lib/constants";
 import Image from "next/image";
 import Link from "next/link";
+import posthog from "posthog-js";
 
-interface Props extends EventItem {}
+type Props = EventItem;
 
 const EventCard = ({ title, image, slug, location, date, time }: Props) => {
   return (
@@ -10,6 +13,14 @@ const EventCard = ({ title, image, slug, location, date, time }: Props) => {
       href={`/events/${slug}`}
       id="event-card"
       className="flex flex-col items-center gap-4 rounded-lg bg-white p-4 shadow-md"
+      onClick={() =>
+        posthog.capture("event_card_clicked", {
+          event_title: title,
+          event_slug: slug,
+          event_location: location,
+          event_date: date,
+        })
+      }
     >
       <Image
         src={image}
