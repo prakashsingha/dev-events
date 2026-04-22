@@ -1,5 +1,7 @@
 import BookEvent from "@/components/BookEvent";
-import { Book } from "lucide-react";
+import EventCard from "@/components/EventCard";
+import { IEvent } from "@/database";
+import { getSimilarEventsBySlug } from "@/lib/actions/event.actions";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
@@ -53,10 +55,6 @@ const EventDetailsPage = async ({
   try {
     const request = await fetch(`${BASE_URL}/api/events/${slug}`, {
       next: { revalidate: 60 }, // Revalidate data every 60 seconds
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
     });
 
     if (!request.ok) {
@@ -75,6 +73,8 @@ const EventDetailsPage = async ({
     console.error("Error fetching event data:", error);
     return notFound();
   }
+
+  let similarEvents: IEvent[] = await getSimilarEventsBySlug(slug);
 
   return (
     <section id="event">
@@ -126,14 +126,14 @@ const EventDetailsPage = async ({
             />
           </section>
 
-          <EventAgenda agendaItems={JSON.parse(event.agenda[0])} />
+          <EventAgenda agendaItems={event.agenda} />
 
           <section className="flex-col-gap-2">
             <h2>About the Organizer</h2>
             {event.organizer}
           </section>
 
-          <EventTags tags={JSON.parse(event.tags[0])} />
+          <EventTags tags={event.tags} />
         </div>
 
         <aside className="booking">
@@ -151,6 +151,19 @@ const EventDetailsPage = async ({
             <BookEvent />
           </div>
         </aside>
+      </div>
+
+      <div className="flex w-full flex-col gap-4 pt-20">
+        <h2>Similar Events</h2>
+        <div className="flex flex-row-gap-4 overflow-x-auto">
+          {similarEvents.length > 0 ? (
+            similarEvents.map((similarEvent: IEvent) => (
+              <EventCard key={similarEvent.slug} {...similarEvent} />
+            ))
+          ) : (
+            <p>No similar events found.</p>
+          )}
+        </div>
       </div>
     </section>
   );

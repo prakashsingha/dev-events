@@ -20,7 +20,30 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const createdEvent = await Event.create(event);
+    let tags = JSON.parse(event.tags as string);
+    if (!Array.isArray(tags)) {
+      return NextResponse.json(
+        {
+          message: "Tags must be an array.",
+        },
+        { status: 400 },
+      );
+    }
+    let agenda = JSON.parse(event.agenda as string);
+    if (!Array.isArray(agenda)) {
+      return NextResponse.json(
+        {
+          message: "Agenda must be an array.",
+        },
+        { status: 400 },
+      );
+    }
+
+    const createdEvent = await Event.create({
+      ...event,
+      tags: tags,
+      agenda: agenda,
+    });
     return NextResponse.json(
       {
         message: "Event created successfully.",
