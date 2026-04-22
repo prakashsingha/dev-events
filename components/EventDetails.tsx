@@ -56,7 +56,6 @@ const EventDetails = async ({ params }: { params: Promise<string> }) => {
   cacheLife("hours");
 
   const slug = await params;
-
   let event;
 
   try {
