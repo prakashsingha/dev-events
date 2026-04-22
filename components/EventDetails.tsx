@@ -2,11 +2,12 @@ import BookEvent from "@/components/BookEvent";
 import EventCard from "@/components/EventCard";
 import { IEvent } from "@/database";
 import { getSimilarEventsBySlug } from "@/lib/actions/event.actions";
+import { getBaseUrl } from "@/lib/utils";
 import { cacheLife } from "next/cache";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const BASE_URL = getBaseUrl();
 const booking = 10;
 
 const EventDetailItem = async ({
