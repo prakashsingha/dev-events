@@ -10,7 +10,6 @@ const ExploreBtn = () => {
       id="explore-btn"
       className="mt-7 mx-auto"
       onClick={() => {
-        console.log("Clicked");
         posthog.capture("explore_events_clicked");
       }}
     >

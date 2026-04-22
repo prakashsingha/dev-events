@@ -1,17 +1,27 @@
 "use client";
 
+import { createBooking } from "@/lib/actions/booking.actions";
+import posthog from "posthog-js";
 import { useState } from "react";
 
-const BookEvent = () => {
+const BookEvent = ({ eventId, slug }: { eventId: string; slug: string }) => {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the email to your backend or an API
-    setTimeout(() => {
+
+    const result = await createBooking({
+      eventId,
+      email,
+    });
+
+    if (result.success) {
       setSubmitted(true);
-    }, 1000); // Simulate an API call delay
+      posthog.capture("event-booked", { eventId, slug, email });
+    } else {
+      posthog.captureException("Booking creation failed");
+    }
   };
 
   return (
